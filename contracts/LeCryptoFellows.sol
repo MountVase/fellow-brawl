@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract LeCryptoFellows is ERC721, ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
-    address public randomnessHost;
+    address public brawlHost;
     Counters.Counter private _tokenIdCounter;
 
     mapping(address => uint) fellows;
@@ -17,12 +17,11 @@ contract LeCryptoFellows is ERC721, ERC721URIStorage, Ownable {
 
 
     constructor() ERC721("LeCryptoFellows", "LCF") {
-        _tokenIdCounter.increment();
         // start id:s at 1, helps with other math.
     }
 
     
-    function initializeFellow(address to, string memory uri) public payable {
+    function initializeFellow(address to, string memory uri) public {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
@@ -31,23 +30,29 @@ contract LeCryptoFellows is ERC721, ERC721URIStorage, Ownable {
     }
 
 
-    function depositGamblingDebts() payable external {
+    function depositGamblingDebts() payable public {
         uint id = fellows[msg.sender];
 
         fellowBalances[id] = msg.value;
     }
 
+    function withdrawFunds() public {
+        uint id = fellows[msg.sender];
 
-    function brawl(uint randomNumberYay) public onlyAuthorized returns(uint winner, uint loser) {
+        uint amount = fellowBalances[id];
+
+        address(msg.sender).transfer(amount);
+    }
+
+
+    function brawl(uint randomNumberYay) public onlyAuthorized returns (uint winner, uint loser) {
         uint theChosenOne = randomNumberYay % 40;
         uint theUnfortunateOne;
 
-        if (theChosenOne > 1 && theChosenOne < 40) {
+        if (theChosenOne >= 1 && theChosenOne <= 40) {
             theUnfortunateOne = theChosenOne - 1;
-        } else if (theChosenOne == 1) {
-            theUnfortunateOne = 2;
-        } else if (theChosenOne == 40) {
-            theUnfortunateOne = 39;
+        } else if (theChosenOne == 0) {
+            theUnfortunateOne = 1;
         }
 
         fellowBalances[theChosenOne] += fellowBalances[theUnfortunateOne];
@@ -57,8 +62,12 @@ contract LeCryptoFellows is ERC721, ERC721URIStorage, Ownable {
     }    
     
     modifier onlyAuthorized() {
-        require(msg.sender == randomnessHost, "this has to be called by a specific contract, sorry");
+        require(msg.sender == brawlHost, "this has to be called by a specific contract, sorry");
         _;
+    }
+
+    function setBrawlHost(address bh) public onlyOwner {
+        brawlHost = bh;
     }
     
     

@@ -53,7 +53,7 @@ contract RandomnessHost is VRFConsumerBaseV2 {
   }
 
   // Assumes the subscription is funded sufficiently.
-  function requestRandomWords() external onlyOwner {
+  function requestRandomWords() external {
     // Will revert if subscription is not set and funded.
     s_requestId = COORDINATOR.requestRandomWords(
       keyHash,
@@ -63,6 +63,14 @@ contract RandomnessHost is VRFConsumerBaseV2 {
       numWords
     );
   }
+
+  function getWords() public view returns (uint, uint) {
+      uint first = s_randomWords[0];
+      uint second = s_randomWords[1];
+
+      return (first, second);
+  }
+
   
   function fulfillRandomWords(
     uint256, /* requestId */
