@@ -1,18 +1,20 @@
-import React from "react";
-import { Card, Typography, Button } from "antd";
+import React, { useState } from "react";
+import { Card, Typography, Button, Input } from "antd";
 import { useMoralis, useWeb3Contract } from "react-moralis";
-import { abi } from "../contracts/ERC1155CustomUpgradeableV1.json";
+import { abi } from "../contracts/LeCryptoFellows.json";
 
 export default function QuickStart() {
   const { account } = useMoralis();
+  const [address, setAddress] = useState();
+  const [uri, setUri] = useState();
+
   const { runContractFunction, isLoading } = useWeb3Contract({
-    functionName: "mint",
+    functionName: "initializeFellow",
     abi,
-    contractAddress: "0xc44a27657627A89D522F98c04C9Fa820484Af46A",
+    contractAddress: "0x8ac2c13A1A21Ac44793576e8D01C9Dc00F4cECaA",
     params: {
-      account,
-      id: 0,
-      amount: 1,
+      address,
+      uri
     },
   });
 
@@ -34,6 +36,8 @@ export default function QuickStart() {
           alt="Test"
           style={{ marginBottom: "2rem" }}
         />
+        <Input placeholder="address" onChange={(e) => setAddress(e.target.value)}/>
+        <Input placeholder="uri" onChange={(e) => setUri(e.target.value)} />
         <Button
           type="primary"
           shape="round"
@@ -42,7 +46,7 @@ export default function QuickStart() {
           loading={isLoading}
           onClick={() => runContractFunction()}
         >
-          MINT
+          JOIN
         </Button>
       </Card>
     </div>
