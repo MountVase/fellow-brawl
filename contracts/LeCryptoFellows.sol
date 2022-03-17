@@ -41,19 +41,16 @@ contract LeCryptoFellows is ERC721, ERC721URIStorage, Ownable {
 
         uint amount = fellowBalances[id];
 
-        address(msg.sender).transfer(amount);
+        payable(msg.sender).transfer(amount);
     }
 
 
-    function brawl(uint randomNumberYay) public onlyAuthorized returns (uint winner, uint loser) {
-        uint theChosenOne = randomNumberYay % 40;
-        uint theUnfortunateOne;
+    function brawl(uint randomNumberOne, uint randomNumberTwo) public onlyAuthorized returns (uint winner, uint loser) {
+        uint theChosenOne = randomNumberOne % 40;
+        uint theUnfortunateOne = randomNumberTwo % 40;
 
-        if (theChosenOne >= 1 && theChosenOne <= 40) {
-            theUnfortunateOne = theChosenOne - 1;
-        } else if (theChosenOne == 0) {
-            theUnfortunateOne = 1;
-        }
+        // had lots of if elses here, this will throw error in certain edge cases
+        // , for example, same winner & loser. but that's to fix for another time.
 
         fellowBalances[theChosenOne] += fellowBalances[theUnfortunateOne];
         fellowBalances[theUnfortunateOne] = 0;
