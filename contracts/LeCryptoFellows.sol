@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract MyToken is ERC721, ERC721URIStorage, Ownable {
+contract LeCryptoFellows is ERC721, ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
     address public randomnessHost;
@@ -16,10 +16,13 @@ contract MyToken is ERC721, ERC721URIStorage, Ownable {
     mapping(uint => uint) fellowBalances;
 
 
-    constructor() ERC721("MyToken", "MTK") {}
+    constructor() ERC721("LeCryptoFellows", "LCF") {
+        _tokenIdCounter.increment();
+        // start id:s at 1, helps with other math.
+    }
 
     
-    function initializeFellow(address to, string memory uri) public onlyOwner {
+    function initializeFellow(address to, string memory uri) public payable {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
